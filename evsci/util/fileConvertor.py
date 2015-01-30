@@ -10,9 +10,7 @@ class fileConvertor():
 	
 	self.dockPath = Docked_Result_Path
 	self.individualDocks_outdir=os.path.join(self.dockPath,"individualModels")
-   	if not os.path.exists(self.individualDocks_outdir):
-   		print "*****making directory", self.individualDocks_outdir
-		os.mkdir(self.individualDocks_outdir) 
+
 	self.Program_path = Command().Get_program_path("maestro").replace("maestro","")
 
     def Build_Glide(self):
@@ -21,6 +19,9 @@ class fileConvertor():
     		return False
 	#if not os.path.exists(os.path.join(self.individualDocks_outdir,"dock1_XP_sorted.mae")):
     		#shutil.copyfile(os.path.join(self.dockPath,"dock1_XP_sorted.mae"), os.path.join(self.individualDocks_outdir,"dock1_XP_sorted.mae"))
+        if not os.path.exists(self.individualDocks_outdir):
+   		print "*****making directory", self.individualDocks_outdir
+		os.mkdir(self.individualDocks_outdir) 
     	self.Run_conversion("mae","pdb",os.path.join(self.dockPath,"dock1_XP_sorted.mae"),"dock1_XP_sorted.pdb")
     	receptorFile=os.path.join(self.individualDocks_outdir,"dock1_XP_sorted-1.pdb")
     	if os.path.exists(receptorFile):
@@ -34,6 +35,9 @@ class fileConvertor():
 	#if there is no result return False
     	if not os.path.exists(os.path.join(self.dockPath,rankingTextFile)):
     		return False
+    	if not os.path.exists(self.individualDocks_outdir):
+   		print "*****making directory", self.individualDocks_outdir
+		os.mkdir(self.individualDocks_outdir) 
     	rankedlist=self.Read_Gold_RankingFile(os.path.join(self.dockPath,rankingTextFile))
     	self.convert_Gold_files(rankedlist)
     	if not os.path.exists(os.path.join(self.individualDocks_outdir,"receptor.pdb")):
