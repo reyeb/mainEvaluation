@@ -18,7 +18,7 @@ argparser.add_argument("-dockedResultpath", dest = "d", nargs = "*", help = "doc
 argparser.add_argument("-nativeFiles", dest = "n", nargs = "*", help = "native path", type = str)
 argparser.add_argument("-gpcrModelsPath", dest = "m", nargs = "*", help = "gpcr models", type = str)
 argparser.add_argument("-receptor", dest = "r", nargs = "*", help = "receptor_address", type = str)
-#argparser.add_argument("-outDirectory", dest = "o", nargs = "*", help = "complex_name", type = str)
+argparser.add_argument("-outDirectory", dest = "o", nargs = "*", help = "outputdir", type = str)
 argparser.add_argument('-mode', dest = "mode", choices=['Gold', 'Glide','all'])
 
 
@@ -41,6 +41,8 @@ if args.m:
 else:
 	raise IOError("Enter gpcrModelsPath location")
 
+if args.o:
+	ouput_dir =args.o[0]
 
 if not os.path.exists(dockedModels_dir):
    raise IOError("Couldn't locate the dockedModels dir")
@@ -48,15 +50,15 @@ if not os.path.exists(dockedModels_dir):
 if not os.path.exists(NativeFiles_dir):
    raise IOError("Couldn't locate the NativeFiles die")
 
-#if not os.path.exists(ouput_dir):
-   #print "making directory", ouput_dir
-   #os.mkdir(ouput_dir)
+if not os.path.exists(ouput_dir):
+   print "making directory", ouput_dir
+   os.mkdir(ouput_dir)
 
 if args.r:
     complexname=args.r[0].replace('_receptor.pdb',"")
 
 	
-main(dockedModels_dir,NativeFiles_dir,gpcrModels_dir,complexname,args.mode).Run_Dock()
+main(dockedModels_dir,NativeFiles_dir,gpcrModels_dir,complexname,args.mode,ouput_dir).Run_Dock()
 #print("--- %s seconds ---" % str(time.time() - start_time))
 
 
