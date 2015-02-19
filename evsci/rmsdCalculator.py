@@ -10,6 +10,8 @@ from prosci.util.tmalign import tmalign_objects,transform_structure
 from prosci.common import write_file
 from prosci.util.pdb3d import rmsd_static
 import collections
+from prosci.util.command import *
+import re
 
 class rmsdCalculator():
 
@@ -24,6 +26,8 @@ class rmsdCalculator():
 	self.competitionModelFile=COMPETITIOMODEL
 	self.Prepare_Output_File()
 	#self.mode=MODE
+	self.Program_path = Command().Get_program_path("maestro").replace("maestro","")
+	self.mainExecutablePath = os.path.join(self.Program_path,"run")
 	
     def Prepare_Output_File(self):
 	if not os.path.exists(self.outputfile):
@@ -61,10 +65,10 @@ class rmsdCalculator():
     		n_lig_name=glob.glob(dockedmodelName+'*_ligand.pdb')
     	#print "*********",n_rec_name,n_lig_name
     	
-    	n_lig_file=os.path.join(self.native,n_lig_name[0])
+    	self.n_lig_file=os.path.join(self.native,n_lig_name[0])
     	n_rec_file=os.path.join(self.native,n_rec_name[0])
 	self.native_rec_pdb=Pdb(n_rec_file)
-	self.native_lig_pdb=Pdb(n_lig_file).ligands
+	self.native_lig_pdb=Pdb(self.n_lig_file).ligands
 	    	
     		
     def Get_all_RMSD_Score(self):
@@ -75,8 +79,9 @@ class rmsdCalculator():
 	docked_rec_pdb=Pdb(docked_ReceptorFile)
 
 	allFiles.sort()
+	
 	for dockFile in allFiles:
-    		if "receptor" not in dockFile:
+    		if "receptor" not in dockFile and "superposed" not in dockFile:
 			print dockFile
 			dligandFile=os.path.join(self.individualDocks_outdir,dockFile)
 			rmsd=self.Calcualte_rmsd(dligandFile,docked_rec_pdb)
@@ -86,8 +91,12 @@ class rmsdCalculator():
 			with open (self.outputfile,"a") as f:
 				f.write(overlap_str +"\n")
 			resultDic[dockFile]= rmsd
-			#trans_lig_path=dligandFile.replace(".pdb","_superposed.pdb")
-			#write_file(trans_lig_path, str(sorted_docked_lig_pdb))
+
+			
+
+			#with cd (self.ouPutDir): 
+
+
 			#trans_lig_path=dligandFile.replace(".pdb","native_superposed.pdb")
 			#write_file(trans_lig_path, str(sorted_native_lig_pdb))
 			#print "files in: ",trans_lig_path
@@ -114,7 +123,21 @@ class rmsdCalculator():
 	#print "*"*80
 	sorted_native_lig_pdb=self.SortLigandbyAtomName(self.native_lig_pdb)
 	sorted_docked_lig_pdb=self.SortLigandbyAtomName(docked_lig_pdb)
-	rmsd = rmsd_static(sorted_docked_lig_pdb, sorted_native_lig_pdb, atom_types=None)
+	#myrmsd = rmsd_static(sorted_docked_lig_pdb, sorted_native_lig_pdb, atom_types=None)
+	
+	trans_lig_path=dligandFile.replace(".pdb","_superposed.pdb")
+	#if not os.path.isfile(trans_lig_path): 
+	#print "write supeposition"
+	write_file(trans_lig_path, str(sorted_docked_lig_pdb))
+	
+	arguments=[self.mainExecutablePath,"rmsd.py","-use_neutral_scaffold", self.n_lig_file, trans_lig_path]
+	rmnsdLine=Command().Process_Command(arguments," ","Get RMSD btw docked and native ligand.")
+	rmsd=self.GetrmsdFromLine(rmnsdLine)
+	
+	#print "python /home/model/schrodinger.2014-4/mmshare-v28013/python/common/rmsd.py -use_neutral_scaffold "+self.n_lig_file+" "+ trans_lig_path
+	
+	#os.system("python /home/model/schrodinger.2014-4/mmshare-v28013/python/common/rmsd.py -use_neutral_scaffold "+self.n_lig_file+" "+ trans_lig_path)
+	
 	return rmsd
 
     def SortLigandbyAtomName(self,myligand):
@@ -133,4 +156,13 @@ class rmsdCalculator():
 		return sorted_myligand
 
     	
+    def GetrmsdFromLine(self,rmsdLine):    	
+    	#parts=rmsdLine.split()
+    	print rmsdLine
+    	m = re.search('In-place RMSD = (.+?);', rmsdLine)
+    	if m:
+    		rmsd = m.group(1)
+    	else:
+    		rmsd=1000
+    	return float(rmsd)
     	

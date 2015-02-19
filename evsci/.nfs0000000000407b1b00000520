@@ -59,7 +59,7 @@ class InterfaceOverlaper():
     	allFiles.sort()
     	resultDic=dict()
     	for dockFile in allFiles:
-    		if "receptor" not in dockFile and "superposed" not in dockFile:
+    		if "receptor" not in dockFile:
     			print dockFile
     			ligandFile=os.path.join(self.individualDocks_outdir,dockFile)
 			residue_overlapScore,pair_overlapScore = self.Get_the_Score(receptorFile,ligandFile)

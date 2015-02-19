@@ -19,8 +19,8 @@ class main():
     def Run_Dock(self):
 	
 	
-	#competitionpath="/home/t701033/GPCR2013_models"
-	competitionpath=None
+	competitionpath="/home/t701033/GPCR2013_models"
+	#competitionpath=None
 	
 	
 	#if mode==all means run all docking methods
@@ -41,7 +41,7 @@ class main():
 	
 		ouput_dir= os.path.join(self.mainouput_dir,"Glide")
 		#ouput_dir= "/work/cadd1/u049808/reyhaneh/myresults/evaluation/docked_9_12_14/Glide"
-		if not os.path.exists(ouput_dir):
+		if not os.path.isdir(ouput_dir):
    			os.mkdir(ouput_dir)
 		
 		
@@ -77,8 +77,8 @@ class main():
 		
 		ouput_dir= os.path.join(self.mainouput_dir,"Gold")
 		#"/work/cadd1/u049808/reyhaneh/myresults/evaluation/docked_9_12_14/Gold"
-		#if not os.path.exists(ouput_dir):
-   			#os.mkdir(ouput_dir)
+		if not os.path.isdir(ouput_dir):
+   			os.mkdir(ouput_dir)
 		
 		if not self.DoesResultExist(gold_docked_file):
 			#print "***in here1"
@@ -98,7 +98,7 @@ class main():
 		
 		overlapDic,competition_residue_overlapScore=interfaceOverlaperInstance.Get_overlap_Score()
 		rmsdDic,competitionrmsd=rmsdCalculatorInstance.Get_RMSD_Score()
-		print competition_residue_overlapScore,competitionrmsd,rmsdDic
+		#print competition_residue_overlapScore,competitionrmsd,rmsdDic
 		self.Merge_results(overlapDic,rmsdDic,ouput_dir,competitionrmsd,competition_residue_overlapScore)
 
 
