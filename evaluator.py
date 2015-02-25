@@ -19,7 +19,7 @@ argparser.add_argument("-nativeFiles", dest = "n", nargs = "*", help = "native p
 argparser.add_argument("-gpcrModelsPath", dest = "m", nargs = "*", help = "gpcr models", type = str)
 argparser.add_argument("-receptor", dest = "r", nargs = "*", help = "receptor_address", type = str)
 argparser.add_argument("-outDirectory", dest = "o", nargs = "*", help = "outputdir", type = str)
-argparser.add_argument('-mode', dest = "mode", choices=['Gold', 'Glide','all'])
+argparser.add_argument('-mode', dest = "mode", choices=['Gold', 'Glide','Vina','all'])
 
 
 args = argparser.parse_args()

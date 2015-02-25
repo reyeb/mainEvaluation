@@ -19,8 +19,8 @@ class main():
     def Run_Dock(self):
 	
 	
-	competitionpath="/home/t701033/GPCR2013_models"
-	#competitionpath=None
+	#competitionpath="/home/t701033/GPCR2013_models"
+	competitionpath=None
 	
 	
 	#if mode==all means run all docking methods
@@ -36,7 +36,7 @@ class main():
 		print "***Running Glide ...."
 		print "Processing ",self.complex_Name
 		#processed=True
-		glideConvertorInstance = fileConvertor(glide_docked_file)
+		glideConvertorInstance = fileConvertor(glide_docked_file,self.mode)
 		processed=glideConvertorInstance.Build_Glide()
 	
 		ouput_dir= os.path.join(self.mainouput_dir,"Glide")
@@ -70,7 +70,7 @@ class main():
 		gold_docked_file=os.path.join(self.docked_Models,"Gold",self.complex_Name,"grid1")
 		
 		
-		goldConvertorInstance = fileConvertor(gold_docked_file)
+		goldConvertorInstance = fileConvertor(gold_docked_file,self.mode)
 		#processed=goldConvertorInstance.Build_Gold(self.complex_Name,os.path.join(self.gpcr_Models,self.complex_Name+"_receptor.pdb"))
 		
 		#interfaceOverlaperInstance=None
@@ -101,6 +101,15 @@ class main():
 		#print competition_residue_overlapScore,competitionrmsd,rmsdDic
 		self.Merge_results(overlapDic,rmsdDic,ouput_dir,competitionrmsd,competition_residue_overlapScore)
 
+	if self.run_mode ==1 or self.mode == "Vina":
+		print "***Running Vina ...."
+		print "Processing ",self.complex_Name
+		vina_docked_file=os.path.join(self.docked_Models,"Vina",self.complex_Name,"grid1")
+		
+		
+		vinaConvertorInstance = fileConvertor(vina_docked_file,self.mode,self.complex_Name)
+		processed=vinaConvertorInstance.Build_Vina()
+		
 
     def Merge_results(self,overlapDic,rmsdDic,ouput_dir,competitionrmsd,competition_residue_overlapScore):
 	
