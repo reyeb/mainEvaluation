@@ -79,7 +79,7 @@ class fileConvertor():
     def Vina_Select_receptor(self):
 	receptorPath=self.dockPath.replace("grid1","")
 	receptor_file=os.path.join(receptorPath,self.complex_name+"_receptor_Prep.pdbqt")
-	dst=os.path.join(self.individualDocks_outdir,self.complex_name+"_receptor_Prep.pdbqt")
+	dst=os.path.join(self.individualDocks_outdir,"receptor.pdbqt")
 	#print "**",dst,receptor_file
 	self.copyanything(receptor_file, dst)
 
