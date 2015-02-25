@@ -212,6 +212,7 @@ def Get_interface_residues(f1,f2,c1,cutoff = 5.0):
 	#Get interfacial residues
 	#run neighbor search on both instances - not optimal but good enough for most imaginable applications.
 	interface_1 = contacts_1
+	
 	residueList = save_residues("",interface_1,contacts_1)
 	
 	pairlist=save_residues_Ligand_pair("",interface_1,contacts_1,contactLigandDic)

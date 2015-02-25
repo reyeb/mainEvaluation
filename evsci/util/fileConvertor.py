@@ -60,7 +60,7 @@ class fileConvertor():
     	allFiles=os.listdir(self.dockPath)   		
     	
     	for fileName in allFiles:
-    		if fileName.endswith(".sdf"):
+    		if fileName.endswith(".sdf") and not fileName.startswith("ranked"):
     			parts= fileName.split("_")
     			soln_number = parts[-1].replace(".sdf","")
     			index=ranklist.index(soln_number)

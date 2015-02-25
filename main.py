@@ -37,7 +37,7 @@ class main():
 		print "Processing ",self.complex_Name
 		#processed=True
 		glideConvertorInstance = fileConvertor(glide_docked_file)
-		#processed=glideConvertorInstance.Build_Glide()
+		processed=glideConvertorInstance.Build_Glide()
 	
 		ouput_dir= os.path.join(self.mainouput_dir,"Glide")
 		#ouput_dir= "/work/cadd1/u049808/reyhaneh/myresults/evaluation/docked_9_12_14/Glide"
