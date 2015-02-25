@@ -19,6 +19,7 @@ argparser.add_argument("-nativeFiles", dest = "n", nargs = "*", help = "native p
 argparser.add_argument("-gpcrModelsPath", dest = "m", nargs = "*", help = "gpcr models", type = str)
 argparser.add_argument("-receptor", dest = "r", nargs = "*", help = "receptor_address", type = str)
 argparser.add_argument("-outDirectory", dest = "o", nargs = "*", help = "outputdir", type = str)
+argparser.add_argument("-comptetionpath", dest = "c", nargs = "*", help = "outputdir", type = str)
 argparser.add_argument('-mode', dest = "mode", choices=['Gold', 'Glide','Vina','all'])
 
 
@@ -57,6 +58,10 @@ if not os.path.exists(ouput_dir):
 if args.r:
     complexname=args.r[0].replace('_receptor.pdb',"")
 
+if args.c:
+    comptetionpath=args.c[0]
+else:
+    comptetionpath=None
 	
 main(dockedModels_dir,NativeFiles_dir,gpcrModels_dir,complexname,args.mode,ouput_dir).Run_Dock()
 #print("--- %s seconds ---" % str(time.time() - start_time))

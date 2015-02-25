@@ -4,7 +4,7 @@ from evsci.rmsdCalculator import rmsdCalculator
 
 class main():
     #main(dockedModels_dir ,NativeFiles_dir,gpcrModels_dir,complexname,args.mode)
-    def __init__(self, DOCKED_Models, NATIVE_files, GPCR_Models,COMPLEXNAME, MODE, OUTPUTDir):
+    def __init__(self, DOCKED_Models, NATIVE_files, GPCR_Models,COMPLEXNAME, MODE, OUTPUTDir,COMPETITIONPATH):
     
 	self.docked_Models = DOCKED_Models
 	self.native_files = NATIVE_files
@@ -12,6 +12,7 @@ class main():
 	self.complex_Name = COMPLEXNAME
 	self.mode = MODE
 	self.mainouput_dir= OUTPUTDir
+	self.competitionpath=COMPETITIONPATH
 
 
 
@@ -19,8 +20,8 @@ class main():
     def Run_Dock(self):
 	
 	
-	#competitionpath="/home/t701033/GPCR2013_models"
-	competitionpath=None
+	#self.competitionpath="/home/t701033/GPCR2013_models"
+	#self.competitionpath=None
 	
 	
 	#if mode==all means run all docking methods
@@ -50,14 +51,14 @@ class main():
 			with open(os.path.join(self.mainouput_dir,"NoGlide"),"a") as f:
 				f.write(self.complex_Name+"\n")
 			
-			if competitionpath is not None:
+			if self.competitionpath is not None:
 				
-				interfaceOverlaperInstance=InterfaceOverlaper(None,self.native_files,self.complex_Name,ouput_dir,competitionpath)
-				rmsdCalculatorInstance=rmsdCalculator(None,self.native_files,self.complex_Name,ouput_dir,competitionpath)	
+				interfaceOverlaperInstance=InterfaceOverlaper(None,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
+				rmsdCalculatorInstance=rmsdCalculator(None,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)	
 
 		else:
-			interfaceOverlaperInstance=InterfaceOverlaper(glide_docked_file,self.native_files,self.complex_Name,ouput_dir,competitionpath)
-			rmsdCalculatorInstance=rmsdCalculator(glide_docked_file,self.native_files,self.complex_Name,ouput_dir,competitionpath)
+			interfaceOverlaperInstance=InterfaceOverlaper(glide_docked_file,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
+			rmsdCalculatorInstance=rmsdCalculator(glide_docked_file,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
 			
 		overlapDic,competition_residue_overlapScore=interfaceOverlaperInstance.Get_overlap_Score()
 		rmsdDic,competitionrmsd=rmsdCalculatorInstance.Get_RMSD_Score()	
@@ -85,16 +86,16 @@ class main():
 			with open(os.path.join(self.mainouput_dir,"NoGold"),"a") as f:
 				f.write(self.complex_Name+"\n")
 				
-			if competitionpath is not None:
+			if self.competitionpath is not None:
 				#print "***in here2"
-				interfaceOverlaperInstance=InterfaceOverlaper(None,self.native_files,self.complex_Name,ouput_dir,competitionpath)
-				rmsdCalculatorInstance=rmsdCalculator(None,self.native_files,self.complex_Name,ouput_dir,competitionpath)
+				interfaceOverlaperInstance=InterfaceOverlaper(None,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
+				rmsdCalculatorInstance=rmsdCalculator(None,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
 			
 		else:
 			#print "***in here3"
-			interfaceOverlaperInstance=InterfaceOverlaper(gold_docked_file,self.native_files,self.complex_Name,ouput_dir,competitionpath)
+			interfaceOverlaperInstance=InterfaceOverlaper(gold_docked_file,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
 			
-			rmsdCalculatorInstance=rmsdCalculator(gold_docked_file,self.native_files,self.complex_Name,ouput_dir,competitionpath)
+			rmsdCalculatorInstance=rmsdCalculator(gold_docked_file,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
 		
 		overlapDic,competition_residue_overlapScore=interfaceOverlaperInstance.Get_overlap_Score()
 		rmsdDic,competitionrmsd=rmsdCalculatorInstance.Get_RMSD_Score()
@@ -109,7 +110,29 @@ class main():
 		
 		vinaConvertorInstance = fileConvertor(vina_docked_file,self.mode,self.complex_Name)
 		processed=vinaConvertorInstance.Build_Vina()
+		ouput_dir= os.path.join(self.mainouput_dir,"Vina")
+		if not os.path.isdir(ouput_dir):
+   			os.mkdir(ouput_dir)
 		
+		if not self.DoesResultExist(vina_docked_file):
+			#print "***in here1"
+			with open(os.path.join(self.mainouput_dir,"NoVina"),"a") as f:
+				f.write(self.complex_Name+"\n")
+				
+			if self.competitionpath is not None:
+				interfaceOverlaperInstance=InterfaceOverlaper(None,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
+				rmsdCalculatorInstance=rmsdCalculator(None,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
+			
+		else:
+			#print "***in here3"
+			interfaceOverlaperInstance=InterfaceOverlaper(vina_docked_file,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
+			
+			rmsdCalculatorInstance=rmsdCalculator(vina_docked_file,self.native_files,self.complex_Name,ouput_dir,self.competitionpath)
+		overlapDic,competition_residue_overlapScore=interfaceOverlaperInstance.Get_overlap_Score()
+		rmsdDic,competitionrmsd=rmsdCalculatorInstance.Get_RMSD_Score()
+		#print competition_residue_overlapScore,competitionrmsd,rmsdDic
+		#self.Merge_results(overlapDic,rmsdDic,ouput_dir,competitionrmsd,competition_residue_overlapScore)
+	
 
     def Merge_results(self,overlapDic,rmsdDic,ouput_dir,competitionrmsd,competition_residue_overlapScore):
 	
@@ -156,6 +179,11 @@ class main():
     		else:
     			return True
     	
+	if self.run_mode ==1 or self.mode == "Vina":
+		if not os.path.exists(os.path.join(docked_Result_Path,"FinalModels_1.pdbqt")):
+    			return False
+    		else:
+    			return True
     	
     	if self.run_mode ==1 or self.mode == "Gold":
 		targetNameOnly=self.complex_Name.split("_")[0] 
